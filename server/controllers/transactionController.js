@@ -1,6 +1,30 @@
 const Transaction = require('../models/Transaction');
 const {isAlphabetic, isNumber} = require("../util");
 
+
+const getTransactionById = async (req, res) => {
+  try {
+    const {id} = req.params;
+    const transactions = await Transaction.findOne({id});
+    res.status(200).json(transactions);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
+const updateTransaction = async (req, res) => {
+  try {
+    const {id} = req.params;
+    const transaction = req.body
+
+    console.log(`updating transaction -- id: ${id}, transaction: ${JSON.stringify(transaction)}`)
+    await Transaction.updateOne({id: id}, transaction);
+    res.status(200).json({ message: 'Transactions updated successfully' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
 const getTransactions = async (req, res) => {
   try {
     console.log(`getting transactions -- request body: ${JSON.stringify(req.body)}, request query: ${JSON.stringify(req.query)}`)
@@ -56,4 +80,4 @@ const loadTransactions = async (req, res) => {
 };
 
 
-module.exports = { getTransactions, loadTransactions };
+module.exports = { getTransactions, loadTransactions, getTransactionById, updateTransaction };
