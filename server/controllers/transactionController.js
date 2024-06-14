@@ -1,5 +1,6 @@
 const Transaction = require('../models/Transaction');
 const {isAlphabetic, isNumber} = require("../util");
+const {plainToClass} = require("class-transformer");
 
 
 const getTransactionById = async (req, res) => {
@@ -43,12 +44,8 @@ const getTransactions = async (req, res) => {
 
 const loadTransactions = async (req, res) => {
   try {
-    const transactions = req.body;
-    if(!transactions || transactions.length == 0) {
-      return res.status(400).json({ error: 'Transactions are required' });
-    }
-
-    transactions.forEach(transaction => {
+    const transactions = [];
+    plainToClass(Transaction, req.body).forEach(transaction => {
       if(!transaction?.sender?.firstName || !isAlphabetic(transaction?.sender?.firstName)) {
         transaction.firstName = "";
         console.log(`Invalid first name: ${JSON.stringify(transaction?.firstName)}`)
@@ -70,7 +67,13 @@ const loadTransactions = async (req, res) => {
       }
 
       transaction.date = new Date(transaction?.date).toUTCString();
-    })
+      transactions.push(transaction);
+    });
+    console.log(`loading transactions -- transactions: ${transactions}`)
+    if(!transactions || transactions.length == 0) {
+      return res.status(400).json({ error: 'Transactions are required' });
+    }
+
     const result = await Transaction.insertMany(transactions);
     console.log(`${JSON.stringify(result)} transactions inserted`);
     res.status(200).json({ message: 'Transactions loaded successfully' });
@@ -78,6 +81,7 @@ const loadTransactions = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
 
 
 module.exports = { getTransactions, loadTransactions, getTransactionById, updateTransaction };
