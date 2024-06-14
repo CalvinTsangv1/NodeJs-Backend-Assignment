@@ -9,6 +9,7 @@ const getTransactions = async (req, res) => {
     if(startDate && endDate) {
       query['date'] = {$gte: startDate, $lte: endDate}
     }
+    console.log(`query: ${JSON.stringify(query)}`)
     const transactions = await Transaction.find(query).sort({ date: 1 });
     res.status(200).json(transactions);
   } catch (error) {
