@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
 
 const TransactionSchema = new mongoose.Schema({
-  date: { type: Number, required: true },
+  id: {type: String, required: true, unique: true},
+  date: { type: Date, required: true },
   sender: {
     firstName: { type: String, required: true},
     lastName: { type: String, required: true },
@@ -15,9 +16,9 @@ const TransactionSchema = new mongoose.Schema({
     accountNumber: { type: String, required: true },
     bank: { type: String, required: true }
   },
-  amount: { type: Number, required: true },
-  currencyCd: { type: String, required: true },
-  comments: { type: String, required: true },
+  Amount: { type: Number},
+  CurrencyCd: { type: String},
+  Comments: { type: String },
   status: { type: String, required: true }
 });
 
@@ -27,4 +28,4 @@ TransactionSchema.index({firstName: 1, lastName: 1, dateOfBirth: 1});
 TransactionSchema.index({accountNumber: 1, bank: 1});
 
 
-module.exports = mongoose.model('Transaction', TransactionSchema);
+module.exports = mongoose.model('transaction', TransactionSchema);
